@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Student Enrollment Form</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="http://login2explore.com/jpdb/resources/js/0.0.3/jpdb-commons.js"></script>
+    <script>
+        $(document).ready(function () {
+            const form = $('#enrollment-form');
+            const saveBtn = $('#save-btn');
+            const changeBtn = $('#change-btn');
+            const resetBtn = $('#reset-btn');
+            const rollNoInput = $('#roll-no');
+            const fullNameInput = $('#full-name');
+            const classInput = $('#class');
+            const birthDateInput = $('#birth-date');
+            const addressInput = $('#address');
+            const enrollmentDateInput = $('#enrollment-date');
+
+            disableForm();
+
+            form.on('submit', function (e) {
+                e.preventDefault();
+                const rollNo = rollNoInput.val();
+                const fullName = fullNameInput.val();
+                const classValue = classInput.val();
+                const birthDate = birthDateInput.val();
+                const address = addressInput.val();
+                const enrollmentDate = enrollmentDateInput.val();
+
+                if (rollNo === '' || fullName === '' || classValue === '' || birthDate === '' || address === '' || enrollmentDate === '') {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                var jsonStrObj = {
+                    "Roll-No": rollNo,
+                    "Full-Name": fullName,
+                    "Class": classValue,
+                    "Birth-Date": birthDate,
+                    "Address": address,
+                    "Enrollment-Date": enrollmentDate
+                };
+                var jsonStr = JSON.stringify(jsonStrObj);
+
+                if (jsonStr === "") {
+                    return;
+                }
+                var putReqStr = createPUTRequest("90931448|-31949325375597078|90949662",
+                    jsonStr, "Student", "Student-REL");
+                alert(putReqStr);
+                jQuery.ajaxSetup({ async: false });
+                var resultObj = executeCommandAtGivenBaseUrl(putReqStr,
+                    "http://api.login2explore.com:5577", "/api/iml");
+                alert(JSON.stringify(resultObj));
+                jQuery.ajaxSetup({ async: true });
+                form[0].reset();
+
+                disableForm();
+            });
+
+            resetBtn.on('click', function () {
+                form[0].reset();
+                disableForm();
+            });
+
+            rollNoInput.on('change', function () {
+                const rollNo = rollNoInput.val();
+
+                const rollNoExists = false;
+
+                if (rollNoExists) {
+                    enableForm();
+                    disableRollNoField();
+                    changeBtn.prop('disabled', false);
+                    resetBtn.prop('disabled', false);
+                    fullNameInput.focus();
+                } else {
+                    enableForm();
+                    saveBtn.prop('disabled', false);
+                    resetBtn.prop('disabled', false);
+                    fullNameInput.focus();
+                }
+            });
+
+            function disableForm() {
+                rollNoInput.prop('disabled', false);
+                fullNameInput.prop('disabled', true);
+                classInput.prop('disabled', true);
+                birthDateInput.prop('disabled', true);
+                addressInput.prop('disabled', true);
+                enrollmentDateInput.prop('disabled', true);
+                saveBtn.prop('disabled', true);
+                changeBtn.prop('disabled', true);
+                resetBtn.prop('disabled', true);
+            }
+
+            function enableForm() {
+                fullNameInput.prop('disabled', false);
+                classInput.prop('disabled', false);
+                birthDateInput.prop('disabled', false);
+                addressInput.prop('disabled', false);
+                enrollmentDateInput.prop('disabled', false);
+            }
+
+            function disableRollNoField() {
+                rollNoInput.prop('disabled', true);
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Student Enrollment Form</h2>
+        <form id="enrollment-form">
+            <div class="form-group">
+                <label for="roll-no">Roll No:</label>
+                <input type="text" id="roll-no" name="roll-no" class="form-control" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="full-name">Full Name:</label>
+                <input type="text" id="full-name" name="full-name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="class">Class:</label>
+                <input type="text" id="class" name="class" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="birth-date">Birth Date:</label>
+                <input type="text" id="birth-date" name="birth-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="enrollment-date">Enrollment Date:</label>
+                <input type="text" id="enrollment-date" name="enrollment-date" class="form-control" required>
+            </div>
+            <div class="button-container">
+                <button type="submit" id="save-btn" class="btn btn-primary" disabled>Save</button>
+                <button type="button" id="change-btn" class="btn btn-primary" disabled>Change</button>
+                <button type="button" id="reset-btn" class="btn btn-danger" disabled>Reset</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
